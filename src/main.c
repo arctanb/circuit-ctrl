@@ -32,7 +32,11 @@ bool sw = false;
 // logged variables
 
 double vi;
+double io;
 
+/**
+ * Program Entry Point
+ */
 int main(int argc, char *argv[]) {
   struct pwm pwm;
   struct pfc pfc;
@@ -45,6 +49,7 @@ int main(int argc, char *argv[]) {
   logger_add_var(&logger, "vout", LOGGER_TYPE_DBL, &vo);
   logger_add_var(&logger, "il", LOGGER_TYPE_DBL, &il);
   logger_add_var(&logger, "vin", LOGGER_TYPE_DBL, &vi);
+  logger_add_var(&logger, "io", LOGGER_TYPE_DBL, &io);
 
   int cnt = 0;
   while (true) {
@@ -57,6 +62,10 @@ int main(int argc, char *argv[]) {
       vo += il / c * dt;
     }
 
+    vo -= io * dt / c;
+
+    io = vo / rl;
+
     logger_tick(&logger);
 
     pwm_tick(&pwm);
@@ -64,7 +73,6 @@ int main(int argc, char *argv[]) {
     ++cnt;
   }
 
-  printf("done\n");
   return 0;
 }
 
