@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include "ckt/logger.h"
+#include "ckt/pfc.h"
 #include "ckt/pwm.h"
 
 #define PI 3.14159265
@@ -27,18 +29,26 @@ double vo = 0;
 
 bool sw = false;
 
-void print_hdr();
-void print_val(char symbol, int val);
+// logged variables
+
+double vi;
 
 int main(int argc, char *argv[]) {
   struct pwm pwm;
+  struct pfc pfc;
+  struct logger logger;
   pwm_init(&pwm, dt, 0.7, 1.0/1E5, &sw);
+  pfc_init(&pfc, dt, 1.0/1E3, 400, 0.9, &pwm);
+  logger_init(&logger, dt);
 
-  print_hdr();
+  logger_add_var(&logger, "sw", LOGGER_TYPE_INT, &sw);
+  logger_add_var(&logger, "vout", LOGGER_TYPE_DBL, &vo);
+  logger_add_var(&logger, "il", LOGGER_TYPE_DBL, &il);
+  logger_add_var(&logger, "vin", LOGGER_TYPE_DBL, &vi);
 
   int cnt = 0;
   while (true) {
-    double vi = vimax * ABS(sin(cnt*vifreq*2*PI*dt));
+    vi = vimax * ABS(sin(cnt*vifreq*2*PI*dt));
     double vl = sw ? vi : vi - vo;
     il += vl / l * dt;
     il = MAX(il, 0);
@@ -47,12 +57,7 @@ int main(int argc, char *argv[]) {
       vo += il / c * dt;
     }
 
-    printf("#%d\n", cnt);
-
-    print_val('!', (int)vo);
-    print_val('@', (int)il);
-    print_val('#', (int)vi);
-    print_val('*', (int)sw);
+    logger_tick(&logger);
 
     pwm_tick(&pwm);
 
@@ -61,32 +66,5 @@ int main(int argc, char *argv[]) {
 
   printf("done\n");
   return 0;
-}
-
-void print_hdr() {
-  printf("$timescale 100 ns $end\n");
-  printf("$var wire 32 ! Vout $end\n");
-  printf("$var wire 32 @ IL $end\n");
-  printf("$var wire 32 # Vin $end\n");
-  printf("$var wire 32 * GD $end\n");
-}
-
-void print_binary(int number) {
-  int remainder;
-
-  if (number <= 1) {
-    printf("%d", number);
-    return;
-  }
-
-  remainder = number % 2;
-  print_binary(number >> 1);
-  printf("%d", remainder);
-}
-
-void print_val(char symbol, int val) {
-  printf("b");
-  print_binary(val);
-  printf(" %c\n", symbol);
 }
 
