@@ -17,6 +17,7 @@ struct pfc {
   // state
   int counter;
   double i_avg;
+  double d;
 
 };
 

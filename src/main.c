@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
   logger_add_var(&logger, "il", LOGGER_TYPE_DBL, &il);
   logger_add_var(&logger, "vin", LOGGER_TYPE_DBL, &vi);
   logger_add_var(&logger, "io", LOGGER_TYPE_DBL, &io);
+  logger_add_var(&logger, "ccr", LOGGER_TYPE_INT, &pwm.CCR);
 
   int cnt = 0;
   while (true) {
@@ -68,6 +69,7 @@ int main(int argc, char *argv[]) {
 
     logger_tick(&logger);
 
+    pfc_tick(&pfc, io, vo);
     pwm_tick(&pwm);
 
     ++cnt;
