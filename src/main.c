@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
   struct pfc pfc;
   struct logger logger;
   pwm_init(&pwm, dt, 0.7, 1.0/1E5, &sw);
-  pfc_init(&pfc, dt, 1.0/1E3, 400, 0.9, &pwm);
+  pfc_init(&pfc, dt, 1.0/1E3, 400, 0.95, &pwm, &vi, &vo);
   logger_init(&logger, dt);
 
   logger_add_var(&logger, "sw", LOGGER_TYPE_INT, &sw);
@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
   logger_add_var(&logger, "vin", LOGGER_TYPE_DBL, &vi);
   logger_add_var(&logger, "io", LOGGER_TYPE_DBL, &io);
   logger_add_var(&logger, "ccr", LOGGER_TYPE_INT, &pwm.CCR);
+  logger_add_var(&logger, "vavg", LOGGER_TYPE_DBL, &pfc.v_avg);
 
   int cnt = 0;
   while (true) {
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) {
 
     logger_tick(&logger);
 
-    pfc_tick(&pfc, io, vo);
+    pfc_tick(&pfc);
     pwm_tick(&pwm);
 
     ++cnt;
