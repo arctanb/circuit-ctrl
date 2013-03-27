@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static char char_options[] = {'!', '@', '#', '*', '.', ',', '+'};
+static char char_options[] = {'!', '@', '#', '*', '.', ',', '+', '&'};
 
 /*************************** Static Prototypes ***************************/
 
@@ -32,7 +32,7 @@ void logger_tick(struct logger *logger) {
 }
 
 void logger_add_var(struct logger *logger, char name[LOGGER_NAME_MAX + 1],
-    enum logger_type type, void *var) {
+    enum logger_type type, int mult, void *var) {
 
   assert(logger->num_vars < LOGGER_MAX_VARS);
   assert(strlen(name) <= LOGGER_NAME_MAX);
@@ -42,6 +42,7 @@ void logger_add_var(struct logger *logger, char name[LOGGER_NAME_MAX + 1],
   logged_var->symbol = symbol;
   logged_var->type = type;
   logged_var->var = var;
+  logged_var->mult = mult;
   strcpy(logged_var->name, name);
 
   print_val_hdr(logged_var);
@@ -56,9 +57,9 @@ static void print_val_hdr(struct logged_var *logged_var) {
 static void print_val(struct logged_var *logged_var) {
   int val = -1;
   if (logged_var->type == LOGGER_TYPE_INT) {
-    val = *(int *)logged_var->var;
+    val = *(int *)logged_var->var * logged_var->mult;
   } else if (logged_var->type == LOGGER_TYPE_DBL) {
-    val = (int)(*(double *)logged_var->var);
+    val = (int)(*(double *)logged_var->var * logged_var->mult);
   }
   print_int(logged_var->symbol, val);
 }

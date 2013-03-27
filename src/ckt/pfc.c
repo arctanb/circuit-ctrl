@@ -30,12 +30,15 @@ void pfc_tick(struct pfc *pfc) {
 
   // for now make it a bose hysteretic controller
 
-  if (*pfc->vout > pfc->target_vout) {
-    pfc->d -= 0.01;
-  } else {
-    pfc->d += 0.01;
-  }
+  // decide on a setpoint duty cycle : voltage ratio
+
+  double vtod = 0.002;
+
+  pfc->d = *pfc->vin * vtod;
+
   pfc->d = MAX(0, pfc->d);
+  pfc->d = MIN(0.8, pfc->d);
+
   pwm_set_d(pfc->pwm, pfc->d);
 
 }
