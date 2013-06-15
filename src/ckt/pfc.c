@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "pfc.h"
 #include "util.h"
 
@@ -28,13 +30,12 @@ void pfc_tick(struct pfc *pfc) {
   }
   pfc->v_avg = pfc->v_avg * pfc->v_alpha + *pfc->vout * (1 - pfc->v_alpha);
 
-  // for now make it a bose hysteretic controller
+  double k = 5000;
+  double duty = k / pfc->T * (1 - *(pfc->vin) / *(pfc->vout));
 
-  // decide on a setpoint duty cycle : voltage ratio
+  fprintf(stderr, "duty is at %f\n", duty);
 
-  double vtod = 0.002;
-
-  pfc->d = *pfc->vin * vtod;
+  pfc->d = duty;
 
   pfc->d = MAX(0, pfc->d);
   pfc->d = MIN(0.8, pfc->d);
