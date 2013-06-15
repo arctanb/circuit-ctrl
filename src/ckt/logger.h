@@ -1,7 +1,7 @@
 #ifndef _LOGGER_H
 #define _LOGGER_H
 
-#define LOGGER_MAX_VARS 8
+#define LOGGER_MAX_VARS 9
 #define LOGGER_NAME_MAX 16
 
 enum logger_type {

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static char char_options[] = {'!', '@', '#', '*', '.', ',', '+', '&'};
+static char char_options[] = {'!', '@', '#', '*', '.', ',', '+', '&', '?'};
 
 /*************************** Static Prototypes ***************************/
 

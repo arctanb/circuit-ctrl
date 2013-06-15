@@ -30,7 +30,7 @@ void pfc_tick(struct pfc *pfc) {
   }
   pfc->v_avg = pfc->v_avg * pfc->v_alpha + *pfc->vout * (1 - pfc->v_alpha);
 
-  double k = 5000;
+  double k = 500.0;
   double duty = k / pfc->T * (1 - *(pfc->vin) / *(pfc->vout));
 
   fprintf(stderr, "duty is at %f\n", duty);

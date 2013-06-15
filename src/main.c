@@ -4,6 +4,7 @@
 #include "ckt/logger.h"
 #include "ckt/pfc.h"
 #include "ckt/pwm.h"
+#include "ckt/fir.h"
 
 #define PI 3.14159265
 #define ABS(a) (((a) < 0) ? -(a) : (a))
@@ -42,8 +43,14 @@ int main(int argc, char *argv[]) {
   struct pwm pwm;
   struct pfc pfc;
   struct logger logger;
+  struct fir fir;
+  double fir_impulse_resp[FIR_MAX_LEN];
+  for (int i = 0; i < FIR_MAX_LEN; ++i) {
+    fir_impulse_resp[i] = 1.0;
+  }
   pwm_init(&pwm, dt, 0.7, 1.0/1E5, &sw);
-  pfc_init(&pfc, dt, 1.0/1E3, 400, 0.95, &pwm, &vi, &vo);
+  pfc_init(&pfc, dt, 1.0/1E4, 400, 0.95, &pwm, &vi, &vo);
+  fir_init(&fir, FIR_MAX_LEN, fir_impulse_resp, FIR_INPUT_DBL, &pi);
   logger_init(&logger, dt);
 
   logger_add_var(&logger, "sw", LOGGER_TYPE_INT, 1, &sw);
@@ -54,6 +61,7 @@ int main(int argc, char *argv[]) {
   logger_add_var(&logger, "ccr", LOGGER_TYPE_INT, 1, &pwm.CCR);
   logger_add_var(&logger, "vavg", LOGGER_TYPE_DBL, 1, &pfc.v_avg);
   logger_add_var(&logger, "pin", LOGGER_TYPE_DBL, 1, &pi);
+  logger_add_var(&logger, "s_pin", LOGGER_TYPE_DBL, 1, &fir.output);
 
   int cnt = 0;
   while (true) {
@@ -76,6 +84,7 @@ int main(int argc, char *argv[]) {
 
     pfc_tick(&pfc);
     pwm_tick(&pwm);
+    fir_tick(&fir);
 
     ++cnt;
   }
