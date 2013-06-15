@@ -51,7 +51,13 @@ void logger_add_var(struct logger *logger, char name[LOGGER_NAME_MAX + 1],
 /*************************** Static Functions ***************************/
 
 static void print_val_hdr(struct logged_var *logged_var) {
-  printf("$var wire 32 %c %s $end\n", logged_var->symbol, logged_var->name);
+  char extra[100];
+  memset(extra, 0, sizeof(extra));
+  if (logged_var->mult != 1) {
+    snprintf(extra, 100, "%dx", logged_var->mult);
+  }
+  printf("$var wire 32 %c %s%s $end\n", logged_var->symbol, extra,
+      logged_var->name);
 }
 
 static void print_val(struct logged_var *logged_var) {

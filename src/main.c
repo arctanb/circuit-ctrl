@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
   logger_add_var(&logger, "sw", LOGGER_TYPE_INT, 1, &sw);
   logger_add_var(&logger, "vout", LOGGER_TYPE_DBL, 1, &vo);
-  logger_add_var(&logger, "il", LOGGER_TYPE_DBL, 1, &il);
+  logger_add_var(&logger, "il", LOGGER_TYPE_DBL, 10, &il);
   logger_add_var(&logger, "vin", LOGGER_TYPE_DBL, 1, &vi);
   logger_add_var(&logger, "io", LOGGER_TYPE_DBL, 10, &io);
   logger_add_var(&logger, "ccr", LOGGER_TYPE_INT, 1, &pwm.CCR);
