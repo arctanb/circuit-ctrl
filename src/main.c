@@ -2,9 +2,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "ckt/logger.h"
-#include "ckt/pfc.h"
-#include "ckt/pwm.h"
-#include "ckt/fir.h"
+#include "ckt/mppt.h"
 
 #define PI 3.14159265
 #define ABS(a) (((a) < 0) ? -(a) : (a))
@@ -12,79 +10,76 @@
 
 // circuit parameters
 
-double l = 50E-6;
-double c = 100E-6;
-double rl = 1E3;
+double voc = 40;
+double vout = 120;
+double vset = 30;
 
-double vimax = 100;
-double vifreq = 60;
+double eff = 0.98;
+
+double delta_v = 0.5;
+
+double rin = 1;
 
 // simulation parameters
 
-double dt = 1E-7;
+double dt = 1E-3;
 
 // initial conditions
 
-double il = 0;
-double vo = 0;
-
-bool sw = false;
-
 // logged variables
 
-double vi;
-double io;
-double pi;
+double iin;
+double iout;
+double pout;
+double vmpp;
+double pmpp;
+double efficiency;
+
+double solar_current() {
+  return (voc - vset) / rin;
+}
+
+double solar_vmpp() {
+  return voc / 2;
+}
 
 /**
  * Program Entry Point
  */
 int main(int argc, char *argv[]) {
-  struct pwm pwm;
-  struct pfc pfc;
   struct logger logger;
-  struct fir fir;
-  double fir_impulse_resp[FIR_MAX_LEN];
-  for (int i = 0; i < FIR_MAX_LEN; ++i) {
-    fir_impulse_resp[i] = 1.0;
-  }
-  pwm_init(&pwm, dt, 0.7, 1.0/1E5, &sw);
-  pfc_init(&pfc, dt, 1.0/1E4, 400, 0.95, &pwm, &vi, &vo);
-  fir_init(&fir, FIR_MAX_LEN, fir_impulse_resp, FIR_INPUT_DBL, &pi);
-  logger_init(&logger, dt);
+  struct mppt mppt;
 
-  logger_add_var(&logger, "sw", LOGGER_TYPE_INT, 1, &sw);
-  logger_add_var(&logger, "vout", LOGGER_TYPE_DBL, 1, &vo);
-  logger_add_var(&logger, "il", LOGGER_TYPE_DBL, 10, &il);
-  logger_add_var(&logger, "vin", LOGGER_TYPE_DBL, 1, &vi);
-  logger_add_var(&logger, "io", LOGGER_TYPE_DBL, 10, &io);
-  logger_add_var(&logger, "ccr", LOGGER_TYPE_INT, 1, &pwm.CCR);
-  logger_add_var(&logger, "vavg", LOGGER_TYPE_DBL, 1, &pfc.v_avg);
-  logger_add_var(&logger, "pin", LOGGER_TYPE_DBL, 1, &pi);
-  logger_add_var(&logger, "s_pin", LOGGER_TYPE_DBL, 1, &fir.output);
+  logger_init(&logger, dt);
+  mppt_init(&mppt, dt, 1E-2, delta_v, &voc, &vout, &iin, &iout, &vset);
+
+  logger_add_var(&logger, "vset", LOGGER_TYPE_DBL, 1, &vset);
+  logger_add_var(&logger, "vmpp", LOGGER_TYPE_DBL, 1, &vmpp);
+  logger_add_var(&logger, "voc", LOGGER_TYPE_DBL, 1, &voc);
+  logger_add_var(&logger, "vout", LOGGER_TYPE_DBL, 1, &vout);
+  logger_add_var(&logger, "iin", LOGGER_TYPE_DBL, 1, &iin);
+  logger_add_var(&logger, "iout", LOGGER_TYPE_DBL, 1, &iout);
+  logger_add_var(&logger, "pout", LOGGER_TYPE_DBL, 1, &pout);
+  logger_add_var(&logger, "pmpp", LOGGER_TYPE_DBL, 1, &pmpp);
+  logger_add_var(&logger, "efficiency", LOGGER_TYPE_DBL, 100, &efficiency);
 
   int cnt = 0;
-  while (true) {
-    vi = vimax * ABS(sin(cnt*vifreq*2*PI*dt));
-    double vl = sw ? vi : vi - vo;
-    il += vl / l * dt;
-    il = MAX(il, 0);
+  while (cnt < 10/dt) {
 
-    if (!sw) {
-      vo += il / c * dt;
+    if (cnt == 5/dt) {
+      voc = 90;
     }
 
-    vo -= io * dt / c;
-
-    io = vo / rl;
-
-    pi = vi * il;
+    vmpp = solar_vmpp();
+    iin = solar_current();
+    pout = (vset * iin) * eff;
+    iout = pout / vout;
+    pmpp = voc * voc / (4 * rin) * eff;
+    efficiency = pout / pmpp;
 
     logger_tick(&logger);
 
-    pfc_tick(&pfc);
-    pwm_tick(&pwm);
-    fir_tick(&fir);
+    mppt_tick(&mppt);
 
     ++cnt;
   }
