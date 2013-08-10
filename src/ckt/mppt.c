@@ -5,10 +5,9 @@
 
 
 void mppt_init(struct mppt *mppt, double dt, double T, double delta_v,
-    double *vin, double *vout, double *iin, double *iout, double *vset) {
+    double *vout, double *iin, double *iout, double *vset) {
   mppt->dt = dt;
   mppt->delta_v = delta_v;
-  mppt->vin = vin;
   mppt->vout = vout;
   mppt->iin = iin;
   mppt->iout = iout;
@@ -44,5 +43,4 @@ void mppt_tick(struct mppt *mppt) {
   mppt->prev_pwr = pout;
 
 }
-
 

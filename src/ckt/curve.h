@@ -15,5 +15,7 @@ void curve_init(struct curve *curve, double *points, int len, double x_scale);
 
 double curve_interpolate(struct curve *curve, double x);
 
+double find_best_xy(struct curve *curve);
+
 #endif
 

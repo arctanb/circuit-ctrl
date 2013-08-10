@@ -11,7 +11,6 @@ struct mppt {
   double delta_v;
 
   // input
-  double *vin;
   double *vout;
   double *iin;
   double *iout;
@@ -27,7 +26,7 @@ struct mppt {
 };
 
 void mppt_init(struct mppt *mppt, double dt, double T, double delta_v,
-    double *vin, double *vout, double *iin, double *iout, double *vset);
+    double *vout, double *iin, double *iout, double *vset);
 
 void mppt_set_t(struct mppt *mppt, double T);
 
