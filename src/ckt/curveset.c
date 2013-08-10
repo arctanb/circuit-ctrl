@@ -20,7 +20,8 @@ void curveset_load_curve(struct curveset *curveset) {
  * File format:
  * # curves in file (n)
  * # points per curve (p)
- * curve 0: time in secs that curve 0 should be loaded
+ * x_scale
+ * curve 0: time in secs at which curve 0 should be loaded
  * curve 0: p space-separated floats
  * curve 1, etc.
  */
