@@ -4,6 +4,7 @@
 #include "ckt/logger.h"
 #include "ckt/mppt.h"
 #include "ckt/curve.h"
+#include "ckt/curveset.h"
 
 #define PI 3.14159265
 #define ABS(a) (((a) < 0) ? -(a) : (a))
@@ -41,14 +42,12 @@ double efficiency;
 int main(int argc, char *argv[]) {
   struct logger logger;
   struct mppt mppt;
-  struct curve iv_curve;
-
-  double currents1[] = { 50.0, 45.0, 25.0, 5.0, 0.0 };
-  double currents2[] = { 50.0, 45.0, 40.0, 15.0, 0.0 };
+  struct curve *iv_curve;
+  struct curveset iv_curveset;
 
   logger_init(&logger, dt);
   mppt_init(&mppt, dt, 1E-2, delta_v, &vout, &iin, &iout, &vset);
-  curve_init(&iv_curve, currents1, 5, 20);
+  curveset_init(&iv_curveset, &iv_curve, dt, "iv_profile.curves");
 
   logger_add_var(&logger, "vset", LOGGER_TYPE_DBL, 1, &vset);
   logger_add_var(&logger, "vmpp", LOGGER_TYPE_DBL, 1, &vmpp);
@@ -62,19 +61,16 @@ int main(int argc, char *argv[]) {
   int cnt = 0;
   while (cnt < 10/dt) {
 
-    if (cnt == 5/dt) {
-      curve_init(&iv_curve, currents2, 5, 20);
-    }
-
-    vmpp = find_best_xy(&iv_curve);
-    iin = curve_interpolate(&iv_curve, vset);
+    vmpp = find_best_xy(iv_curve);
+    iin = curve_interpolate(iv_curve, vset);
     pout = (vset * iin) * mppt_eff;
     iout = pout / vout;
-    pmpp = vmpp * curve_interpolate(&iv_curve, vmpp) * mppt_eff;
+    pmpp = vmpp * curve_interpolate(iv_curve, vmpp) * mppt_eff;
     efficiency = pout / pmpp;
 
     logger_tick(&logger);
 
+    curveset_tick(&iv_curveset);
     mppt_tick(&mppt);
 
     ++cnt;

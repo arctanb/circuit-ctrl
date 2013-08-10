@@ -1,51 +1,17 @@
-[*]
-[*] GTKWave Analyzer v3.3.34 (w)1999-2012 BSI
-[*] Fri Aug  9 21:49:01 2013
-[*]
-[dumpfile] "/afs/ir.stanford.edu/users/a/r/arctanb/git/circuit-ctrl/out"
-[dumpfile_mtime] "Fri Aug  9 21:48:33 2013"
-[dumpfile_size] 1023529
-[savefile] "/afs/ir.stanford.edu/users/a/r/arctanb/git/circuit-ctrl/view.gtkw"
-[timestart] 0
-[size] 1680 1003
-[pos] -1 -1
-*-30.530956 2334400000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-[sst_width] 189
-[signals_width] 150
-[sst_expanded] 1
-[sst_vpaned_height] 299
-@8022
-voc[31:0]
-@20000
--
--
--
-@8022
+@8024
 vmpp[31:0]
 @20000
 -
 -
 -
-@8022
+@8024
 vset[31:0]
 @20000
 -
 -
 -
-@8022
-vout[31:0]
-@20000
--
--
--
 @8024
-iin[31:0]
-@20000
--
--
--
-@8022
-iout[31:0]
+vout[31:0]
 @20000
 -
 -
@@ -56,7 +22,7 @@ pout[31:0]
 -
 -
 -
-@8022
+@8024
 pmpp[31:0]
 @20000
 -
@@ -64,10 +30,7 @@ pmpp[31:0]
 -
 @8024
 100xefficiency[31:0]
-@20001
--
 @20000
 -
 -
-[pattern_trace] 1
-[pattern_trace] 0
+-

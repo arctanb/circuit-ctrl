@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "curve.h"
@@ -80,5 +81,16 @@ double find_best_xy(struct curve *curve) {
     }
   }
   return 0;
+}
+
+void curve_print(struct curve *curve) {
+  fprintf(stderr, "curve:\n");
+  fprintf(stderr, "len: %d\n", curve->len);
+  fprintf(stderr, "x_scale: %lf\n", curve->x_scale);
+  fprintf(stderr, "points:");
+  for (int i = 0; i < curve->len; ++i) {
+    fprintf(stderr, " %lf", curve->points[i]);
+  }
+  fprintf(stderr, "\n");
 }
 
