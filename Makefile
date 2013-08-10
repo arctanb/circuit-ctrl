@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-std=c99 -O4 -lm -g -Wall
 
-SRC=src/main.c src/ckt/logger.c src/ckt/mppt.c
+SRC=src/main.c src/ckt/logger.c src/ckt/mppt.c src/ckt/curve.c
 
 a.out: $(SRC)
 	$(CC) -o a.out $(SRC) $(CFLAGS)
