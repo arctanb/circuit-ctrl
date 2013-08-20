@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "pfc.h"
-#include "util.h"
+#include "../util/util.h"
 
 void pfc_init(struct pfc *pfc, double dt, double T, double target_vout,
     double v_alpha, struct pwm *pwm, double *vin, double *vout) {

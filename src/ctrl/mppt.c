@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "mppt.h"
-#include "util.h"
+#include "../util/util.h"
 
 
 void mppt_init(struct mppt *mppt, double dt, double T, double delta_v,

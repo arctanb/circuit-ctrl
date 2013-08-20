@@ -9,11 +9,17 @@ enum logger_type {
   LOGGER_TYPE_DBL,
 };
 
+enum logger_output_type {
+  LOGGER_OUTPUT_TYPE_LXT,
+  LOGGER_OUTPUT_TYPE_CSV
+};
+
 struct logger {
 
   // configuration
 
   double dt;
+  enum logger_output_type output_type;
 
   // stored vars
 
@@ -33,7 +39,9 @@ struct logger {
 
 };
 
-void logger_init(struct logger *logger, double dt);
+void logger_init(struct logger *logger, double dt,
+    enum logger_output_type output_type);
+void logger_start(struct logger *logger);
 void logger_tick(struct logger *logger);
 void logger_add_var(struct logger *logger, char name[LOGGER_NAME_MAX + 1],
     enum logger_type type, int mult, void *var);

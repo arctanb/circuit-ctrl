@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "ckt/logger.h"
-#include "ckt/mppt.h"
-#include "ckt/curve.h"
-#include "ckt/curveset.h"
+#include "util/logger.h"
+#include "ctrl/mppt.h"
+#include "model/curve.h"
+#include "model/curveset.h"
 
 #define PI 3.14159265
 #define ABS(a) (((a) < 0) ? -(a) : (a))
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   struct curve *iv_curve;
   struct curveset iv_curveset;
 
-  logger_init(&logger, dt);
+  logger_init(&logger, dt, LOGGER_OUTPUT_TYPE_LXT);
   mppt_init(&mppt, dt, 1E-2, delta_v, &vout, &iin, &iout, &vset);
   curveset_init(&iv_curveset, &iv_curve, dt, "iv_profile.curves");
 
@@ -57,6 +57,8 @@ int main(int argc, char *argv[]) {
   logger_add_var(&logger, "pout", LOGGER_TYPE_DBL, 1, &pout);
   logger_add_var(&logger, "pmpp", LOGGER_TYPE_DBL, 1, &pmpp);
   logger_add_var(&logger, "efficiency", LOGGER_TYPE_DBL, 100, &efficiency);
+
+  logger_start(&logger);
 
   int cnt = 0;
   while (cnt < 10/dt) {
