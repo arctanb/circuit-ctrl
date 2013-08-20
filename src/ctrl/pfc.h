@@ -1,7 +1,7 @@
 #ifndef _PFC_H
 #define _PFC_H
 
-#include "../ckt/pwm.h"
+#include "../model/pwm.h"
 
 struct pfc {
 
